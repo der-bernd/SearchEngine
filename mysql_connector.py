@@ -1,40 +1,62 @@
+import mysql.connector
+from mysql.connector import Error
 import unittest
-
-import MySQLdb
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 
 class MySqlConnector:
-    db = MySQLdb.connect("localhost", "webcrawler_db_user",
-                         "jmyGxtBUneh9", "webcrawler")
 
-    def __init__(self):
-        pass
+    def __init__(self, *args, **kwargs):
+        host = os.getenv("DB_HOST")
+        user = os.getenv("DB_USER")
+        password = os.getenv("DB_PASS")
+        db = os.getenv("DB_NAME")
+
+        try:
+            self.conn = mysql.connector.connect(
+                host=host, user=user, password=password, db=db)
+        except Error as e:
+            print("CANNOT CONNECT TO DB: {}".format(e))
+            return
 
     def execute_test_query(self):
-        cursor = self.db.cursor()
-        cursor.execute("SELECT * FROM test")
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM test WHERE ID = 0")
+
         result = cursor.fetchall()
         return result
 
-    def execute_query(self, query):
-        cursor = self.db.cursor()
-        cursor.execute(query)
-        self.db.commit()
+    def query(self, query: str, params: tuple = ()):
+        cursor = self.conn.cursor()
+        cursor.execute(query, params)
+
         return cursor.fetchall()
 
 
 class SimpleTest(unittest.TestCase):
 
     # Returns True or False.
-    def test(self):
+    def test(self, *args, **kwargs):
         self.assertTrue(True)
 
     # returns True if queries can be executed
-    def test_conn(self):
+    def test_conn(self, *args, **kwargs):
         conn = MySqlConnector()
         result = conn.execute_test_query()
-        print(result)
-        self.assertEqual(result, ())
+        self.assertEqual(result, [])
+
+    def test_query_with_args(self, *args, **kwargs):
+        conn = MySqlConnector()
+        result = conn.query(
+            "SELECT * FROM test WHERE ID = %s", (1,))
+        self.assertEqual(result, [(1,)])
+
+    def test_query_select_all(self, *args, **kwargs):
+        conn = MySqlConnector()
+        result = conn.query("SELECT * FROM test")
+        self.assertEqual(result, [(1,), (2,)])
 
 
 if __name__ == '__main__':

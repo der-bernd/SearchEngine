@@ -1,4 +1,4 @@
-<!-- search engine template -->
+<!-- search engine results template -->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -21,10 +21,71 @@
   </head>
   <body>
     <div class="container">
+      <!-- search bar -->
+
       <div class="row">
-        {% for record in results %}
-        <div class="col-md-12">{{ record.url }}</div>
-        {% endfor %}
+        <div class="col-md-12">
+          <div class="jumbotron">
+            <h1 class="display-4">Search Engine</h1>
+            <p class="lead">Search for a specific product</p>
+            <hr class="my-4" />
+            <form action="" method="GET">
+              <div class="form-group">
+                <label for="search">Search</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="query"
+                  id="search"
+                  placeholder="Search"
+                />
+              </div>
+              <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- search results -->
+      <div class="row">
+        <div class="col-md-12">
+          <div class="jumbotron">
+            <h1 class="display-4">Search Results</h1>
+            <p class="lead">{{ query }}</p>
+            <hr class="my-4" />
+            <div class="row">
+              {% for page in results.pages %}
+              <div class="col-md-12 my-2">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ page.title }}</h5>
+                    <p class="card-text">{{ page.url }}</p>
+                    <a href="{{ page.url }}" class="btn btn-primary"
+                      >Visit directly</a
+                    >
+                    <a
+                      href="{{ page.url }}"
+                      target="_blank"
+                      class="btn btn-secondard"
+                      >Visit in new tab</a
+                    >
+                  </div>
+                </div>
+              </div>
+              {% else %}
+              <div class="col-md-12 my-2">
+                <div class="card">
+                  <div class="card-heading">
+                    <p>
+                      Unfortunately, your query didn't yield any results. Please
+                      try other words.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </body>
