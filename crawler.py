@@ -14,45 +14,56 @@ class Crawler:
     def __init__(self):
         self.db = MySqlConnector()
 
-    def crawl(self, url, depth_left=0, links_left=0, interval: float = 5):
+    def crawl(self, url: str, depth_left, interval: float = 5):
         """
         Crawl the page with the given url.
         If we cannot go further or no links should be crawled any more, return.
         Wait for the given interval before crawling.
         """
-        if depth_left <= 0 or links_left <= 0:
+        if depth_left <= 0:
             return
 
         time.sleep(interval)
         print("Crawling: {}".format(url))
+
+        # get the page
         response = requests.get(url)
         soup = BeautifulSoup(response.text, "html.parser")
+        try:
+            title = soup.title.text.strip().replace(
+                "\n", " ").replace("\r", " ").replace("\t", " ")
+        except AttributeError:
+            title = "- No title -"
+
+        # add the current page as well
+
+        url = url.split("?")[0]
+        self.add_link_to_db(url, title)
+
         for link in soup.find_all('a'):
             link = link.get('href')
             if link is not None:
                 # cut off the param part of the url
                 link = link.split("?")[0]
 
-                # make sure that the link is a valid url
-                self.add_link_to_db(link.startswith('http')
-                                    and link or url + link)
-
                 if link.startswith('http'):
-                    self.crawl(link, depth_left-1)
+                    self.crawl(link, depth_left-1, interval)
                 elif link.startswith('/'):
-                    self.crawl(url + link, depth_left-1)
+                    self.crawl(url + link, depth_left -
+                               1, interval)
                 elif link.startswith('#'):
                     continue
                 else:
-                    self.crawl(url + '/' + link, depth_left-1)
+                    self.crawl(url + '/' + link, depth_left -
+                               1, interval)
 
-    def add_link_to_db(self, link: str):
+    def add_link_to_db(self, link: str, title: str):
         conn = self.db
         does_link_already_exist = conn.query(
             "SELECT COUNT(*) FROM links WHERE URL = %s", (link, ))[0][0] > 0
         if not does_link_already_exist:
             conn.query(
-                "INSERT INTO links (URL) VALUES (%s)", (link, ))
+                "INSERT INTO links (URL, TITLE) VALUES (%s, %s)", (link, title))
             print("Added link: {}".format(link))
 
 

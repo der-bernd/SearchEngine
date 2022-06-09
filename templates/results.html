@@ -34,6 +34,7 @@
                 <div class="form-group">
                   <label for="search">Search</label>
                   <input
+                    required
                     type="text"
                     class="form-control"
                     name="query"
@@ -54,8 +55,8 @@
           <div class="jumbotron">
             <div>
               <p class="lead">
-                Found {{ results.stats.num_of_results }} result(s) for query '{{
-                results.query }}'
+                Found {{ results.stats.num_of_results }} result(s) in {{
+                results.stats.time }} for query '{{ results.query }}'
               </p>
             </div>
             <hr class="my-4" />
@@ -64,11 +65,11 @@
               <div class="col-md-12 my-2">
                 <div class="card">
                   <div class="card-body">
-                    <h5 class="card-title">Somewhat Google</h5>
+                    <h5 class="card-title">{{ page[0] }}</h5>
                     <p class="card-text">
-                      {{ page[0] }}
-                      <span class="font-weight-bold">{{ page[1] }}</span>
-                      {{ page[2] }}
+                      {{ page[1] }}
+                      <span class="font-weight-bold">{{ page[2] }}</span>
+                      {{ page[3] }}
                     </p>
                     <a href="{{ page.url }}" class="btn btn-primary"
                       >Visit directly</a
