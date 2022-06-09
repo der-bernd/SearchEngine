@@ -43,15 +43,19 @@ def get_search_results():
     args = request.args
     query = args['query']
     first_word_of_query = query.split()[0]
-    print(query)
-    search_results = [{
-        "url": url,
-        "title": "Google",
-    } for url in get_urls_with_word(first_word_of_query)]
+
+    urls = get_urls_with_word(first_word_of_query)
+    urls_split = []
+    for url in urls:
+        parts = url.split(first_word_of_query)
+        urls_split.append((parts[0], first_word_of_query, parts[1]))
 
     return render_template('results.html', results={
-        "pages": search_results,
-        "search": query
+        "pages": urls_split,
+        "query": query,
+        "stats": {
+            "num_of_results": len(urls),
+        }
     })
 
 

@@ -36,6 +36,7 @@
                   type="text"
                   class="form-control"
                   name="query"
+                  value="{{ results.query }}"
                   id="search"
                   placeholder="Search"
                 />
@@ -49,16 +50,24 @@
       <div class="row">
         <div class="col-md-12">
           <div class="jumbotron">
-            <h1 class="display-4">Search Results</h1>
-            <p class="lead">{{ query }}</p>
+            <div>
+              <p class="lead">
+                Found {{ results.stats.num_of_results }} result(s) for query '{{
+                results.query }}'
+              </p>
+            </div>
             <hr class="my-4" />
             <div class="row">
               {% for page in results.pages %}
               <div class="col-md-12 my-2">
                 <div class="card">
                   <div class="card-body">
-                    <h5 class="card-title">{{ page.title }}</h5>
-                    <p class="card-text">{{ page.url }}</p>
+                    <h5 class="card-title">Somewhat Google</h5>
+                    <p class="card-text">
+                      {{ page[0] }}
+                      <span class="font-weight-bold">{{ page[1] }}</span>
+                      {{ page[2] }}
+                    </p>
                     <a href="{{ page.url }}" class="btn btn-primary"
                       >Visit directly</a
                     >
