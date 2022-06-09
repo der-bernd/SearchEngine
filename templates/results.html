@@ -28,21 +28,23 @@
           <div class="jumbotron">
             <h1 class="display-4">Search Engine</h1>
             <p class="lead">Search for a specific product</p>
-            <hr class="my-4" />
-            <form action="" method="GET">
-              <div class="form-group">
-                <label for="search">Search</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  name="query"
-                  value="{{ results.query }}"
-                  id="search"
-                  placeholder="Search"
-                />
-              </div>
-              <button type="submit" class="btn btn-primary">Search</button>
-            </form>
+            <div class="sticky-top">
+              <hr class="my-4" />
+              <form action="" method="GET">
+                <div class="form-group">
+                  <label for="search">Search</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="query"
+                    value="{{ results.query }}"
+                    id="search"
+                    placeholder="Search"
+                  />
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+              </form>
+            </div>
           </div>
         </div>
       </div>

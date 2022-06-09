@@ -1,6 +1,5 @@
 # simple flask server to serve the search engine app
 
-from distutils.command.build_scripts import first_line_re
 from tokenize import String
 import unittest
 from flask import Flask, render_template, request, jsonify
