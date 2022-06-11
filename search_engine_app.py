@@ -40,39 +40,91 @@ def get_urls_with_word(word: str) -> list:
     return [(row[0], row[1]) for row in result]
 
 
-def get_list_of_occurrences(word: str, title_contain_factor: int, title_start_factor: int, title_match_factor: int, url_contain_factor: int) -> list:
+def calculate_score(is_in_title: int, is_title_start: int, is_title: int, is_in_url: int) -> int:
+    """
+    Calculates the score of a page.
+    """
+    TITLE_CONTAIN_FACTOR = 2
+    TITLE_START_FACTOR = 3
+    TITLE_MATCH_FACTOR = 5
+    URL_CONTAIN_FACTOR = 1
+
+    score = 0
+    if is_in_title:
+        score += is_in_title * TITLE_CONTAIN_FACTOR
+    if is_title_start:
+        score += is_title_start * TITLE_START_FACTOR
+    if is_title:
+        score += is_title * TITLE_MATCH_FACTOR
+    if is_in_url:
+        score += is_in_url * URL_CONTAIN_FACTOR
+
+    return score
+
+
+def get_list_of_occurrences(query_list: list[str]) -> list:
     """
     Returns a list of tuples whether the word is in the title or url of the page
     """
     # at the moment, query returns all(!) pages in db, only adds the information whether they
     # contain the word in title or url
 
-    # to reduce the amount of returned data, we could also embed a wh
-    result = mysql.query(
-        """WITH bools AS(
-        SELECT ID,
-        IF(LOWER(TITLE) LIKE %s, 1, 0) AS IS_IN_TITLE,
-        IF(LOWER(TITLE) LIKE %s, 1, 0) AS IS_TITLE_START,
-        IF(LOWER(TITLE) = 'google', 1, 0) AS IS_TITLE,
-        IF(LOWER(URL) LIKE %s, 1, 0) AS IS_IN_URL
-        FROM links
-        WHERE LOWER(TITLE) LIKE %s OR LOWER(URL) LIKE %s
-    )
-    SELECT
-        ID,
-        TITLE,
-        URL,
-        bools.IS_IN_TITLE * %s + bools.IS_TITLE_START * %s + bools.IS_TITLE * %s + bools.IS_IN_URL * %s AS SCORE
-        FROM bools
-        JOIN LINKS USING(ID)
-        ORDER BY SCORE DESC""", (f"%{word}%", f"{word}%", word, f"%{word}%", f"%{word}%",
-                                 title_contain_factor, title_start_factor, title_match_factor, url_contain_factor))
-    # param order: first one is just to contain in title, second is the title to start with the word,
-    # third is the word itself as the title, fourth is the word in the url
-    return [{
-        "title": row[1],
-        "url": row[2],
-    } for row in result]
+    # it's important to use a dict here for O(1) access times
+    results_of_keywords = {}
+    for idx, word in enumerate(query_list):
+        result = mysql.query(
+            """SELECT ID,
+            IF(LOWER(TITLE) LIKE %s, 1, 0) AS IS_IN_TITLE,
+            IF(LOWER(TITLE) LIKE %s, 1, 0) AS IS_TITLE_START,
+            IF(LOWER(TITLE) = %s, 1, 0) AS IS_TITLE,
+            IF(LOWER(URL) LIKE %s, 1, 0) AS IS_IN_URL,
+            TITLE,
+            URL
+            FROM links
+            WHERE LOWER(TITLE) LIKE %s OR LOWER(URL) LIKE %s
+            """, (f"%{word}%", f"{word}%", word, f"%{word}%", f"%{word}%", f"%{word}%",))
+        # param order: first one is just to contain in title, second is the title to start with the word,
+        # third is the word itself as the title, fourth is the word in the url
+        # five and six are just for the where clause, to avoid returning all pages
+
+        # for each element: add the score to the list
+        for row in result:
+            if row[0] not in results_of_keywords:
+                # if page not in results yet, then accommodate it by initializing the dict
+                for row in result:
+                    # take the id as the index
+                    results_of_keywords[row[0]] = {
+                        "title": row[5],
+                        "url": row[6],
+                        "score": [],
+                    }
+
+            results_of_keywords[row[0]]["score"].append(
+                calculate_score(row[1], row[2], row[3], row[4]))
+
+    def multiply_scores(score_list: list) -> int:
+        """
+        Multiplies all scores in the list and returns the result.
+        """
+        result = 1
+        for score in score_list:
+            result *= score
+        return result
+
+    for result in results_of_keywords.values():
+        # we have all the scores in an array, we could use the data to do a bit advanced stuff as well
+        # but for now, just multiply them to have a bit more weight on pages with more keywords
+        result["score"] = multiply_scores(result["score"])
+
+    # and finally transform the dict to a list of dicts
+    list_of_dicts = [results_of_keywords[recordindex]
+                     for recordindex in results_of_keywords]
+
+    # sort the results by score
+    list_of_dicts = sorted(
+        list_of_dicts, key=lambda x: x["score"], reverse=True)
+    print(list_of_dicts)
+    return list_of_dicts
 
 
 @app.route('/', methods=["GET"])
@@ -84,18 +136,12 @@ def search():
 def get_search_results():
     args = request.args
     query = args['query']
-    first_word_of_query = query.split()[0]
-
-    TITLE_CONTAIN_FACTOR = 2
-    TITLE_START_FACTOR = 3
-    TITLE_MATCH_FACTOR = 5
-    URL_CONTAIN_FACTOR = 1
+    query_list = query.split()
 
     start_time = time.time()
 
     # get the items and the info, whether title and whether url contains the word
-    page_list_scored = get_list_of_occurrences(
-        first_word_of_query, TITLE_CONTAIN_FACTOR, TITLE_START_FACTOR, TITLE_MATCH_FACTOR, URL_CONTAIN_FACTOR)
+    page_list_scored = get_list_of_occurrences(query_list)
 
     end_time = time.time()
     elapsed_time = (end_time - start_time) * 1000

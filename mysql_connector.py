@@ -6,7 +6,7 @@ import os
 load_dotenv()
 
 
-class MySqlConnector:
+class MySqlConnector(object):
 
     def __init__(self, *args, **kwargs):
         host = os.getenv("DB_HOST")
@@ -15,32 +15,43 @@ class MySqlConnector:
         db = os.getenv("DB_NAME")
 
         try:
-            self.conn = mysql.connector.connect(
+            self.db = mysql.connector.connect(
                 host=host, user=user, password=password, db=db)
+            self.cursor = self.db.cursor(buffered=True)
         except Error as e:
             print("CANNOT CONNECT TO DB: {}".format(e))
             return
 
-    def execute_test_query(self):
-        cursor = self.conn.cursor()
+    def execute_test_query(self) -> list[tuple]:
+        cursor = self.cursor
         cursor.execute("SELECT * FROM test WHERE ID = 0")
-        cursor.fetchone()
+        self.db.commit()
 
-        result = cursor.fetchall()
-        cursor.close()
+        result = [row for row in cursor.fetchall()]
         return result
 
-    def query(self, query: str, params: tuple = ()) -> list[tuple]:
-        cursor = self.conn.cursor()
+    def query(self, query: str, params: tuple = (), commit=False, no_fetchall=False) -> list[tuple]:
+        """
+        Executes the given query with the params.
+        If that is a SELECT query, it returns the result as a list of tuples.
+        If that is a INSERT query, it returns the last inserted id as an int.
+        You can switch between INSERT and SELECT by setting no_fetchall.
+        """
+        cursor = self.cursor
         cursor.execute(query, params)
-        result = cursor.fetchall()
-        self.conn.commit()
-        cursor.close()
+        self.db.commit()
 
-        return result
+        if no_fetchall:
+            return cursor.lastrowid
+        else:
+            result = [row for row in cursor.fetchall()]
+            return result
 
 
 class SimpleTest(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.conn = MySqlConnector()
 
     # Returns True or False.
     def test(self, *args, **kwargs):
@@ -48,18 +59,18 @@ class SimpleTest(unittest.TestCase):
 
     # returns True if queries can be executed
     def test_conn(self, *args, **kwargs):
-        conn = MySqlConnector()
+        conn = self.conn
         result = conn.execute_test_query()
         self.assertEqual(result, [])
 
     def test_query_with_args(self, *args, **kwargs):
-        conn = MySqlConnector()
+        conn = self.conn
         result = conn.query(
             "SELECT * FROM test WHERE ID = %s", (1,))
         self.assertEqual(result, [(1,)])
 
     def test_query_select_all(self, *args, **kwargs):
-        conn = MySqlConnector()
+        conn = self.conn
         result = conn.query("SELECT * FROM test WHERE ID < 10")
         self.assertEqual(result, [(1,), (2,)])
 
@@ -68,15 +79,16 @@ class SimpleTest(unittest.TestCase):
         Just to test if the insert and delete works.
         Insert a new row and delete it.
         """
-        conn = MySqlConnector()
-        id = 99
-        conn.query("INSERT INTO test (ID) VALUES (%s)", (id,))
-        result = conn.query("SELECT ID FROM test WHERE ID = %s", (id,))
+        conn = self.conn
+        ID = 99
+        conn.query("INSERT INTO test (ID) VALUES (%s)",
+                   (ID,), no_fetchall=True)
+        result = conn.query("SELECT ID FROM test WHERE ID = %s", (ID,))
 
         self.assertEqual(result, [(99,)])
 
-        conn.query("DELETE FROM test WHERE ID = %s", (id,))
-        result = conn.query("SELECT ID FROM test WHERE ID = %s", (id,))
+        conn.query("DELETE FROM test WHERE ID = %s", (ID,), no_fetchall=True)
+        result = conn.query("SELECT ID FROM test WHERE ID = %s", (ID,))
         self.assertEqual(result, [])
 
 

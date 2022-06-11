@@ -63,7 +63,7 @@ class Crawler:
             "SELECT COUNT(*) FROM links WHERE URL = %s", (link, ))[0][0] > 0
         if not does_link_already_exist:
             conn.query(
-                "INSERT INTO links (URL, TITLE) VALUES (%s, %s)", (link, title))
+                "INSERT INTO links (URL, TITLE) VALUES (%s, %s)", (link, title), no_fetchall=True)
             print("Added link: {}".format(link))
 
 
@@ -95,7 +95,7 @@ class SimpleTest(unittest.TestCase):
         links_in_db = conn.query("SELECT COUNT(*) FROM links")[0][0]
 
         # tidy up
-        conn.query("DELETE FROM links")
+        conn.query("DELETE FROM links", no_fetchall=True)
 
         self.assertEqual(number_of_links_supposed_to_be_in_db, links_in_db)
 
