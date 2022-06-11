@@ -65,12 +65,8 @@
               <div class="col-md-12 my-2">
                 <div class="card">
                   <div class="card-body">
-                    <h5 class="card-title">{{ page[0] }}</h5>
-                    <p class="card-text">
-                      {{ page[1] }}
-                      <span class="font-weight-bold">{{ page[2] }}</span>
-                      {{ page[3] }}
-                    </p>
+                    <h5 class="card-title">{{ page.title }}</h5>
+                    <p class="card-text">{{ page.url }}</p>
                     <a href="{{ page.url }}" class="btn btn-primary"
                       >Visit directly</a
                     >
