@@ -1,5 +1,6 @@
 # simple flask server to serve the search engine app
 
+from flask import send_from_directory
 import time
 from tokenize import String
 import unittest
@@ -9,6 +10,11 @@ from mysql_connector import MySqlConnector
 
 mysql = MySqlConnector()
 app = Flask(__name__)
+
+
+@app.route('/static/<path:path>')
+def send_report(path):
+    return send_from_directory('static', path)
 
 
 def run():
@@ -111,20 +117,27 @@ def get_list_of_occurrences(query_list: list[str]) -> list:
             result *= score
         return result
 
+    max_score = 0
+
     for result in results_of_keywords.values():
         # we have all the scores in an array, we could use the data to do a bit advanced stuff as well
         # but for now, just multiply them to have a bit more weight on pages with more keywords
         result["score"] = multiply_scores(result["score"])
 
-    # and finally transform the dict to a list of dicts
-    list_of_dicts = [results_of_keywords[recordindex]
-                     for recordindex in results_of_keywords]
+        # and, if the score is higher than the max score, set it as the new max score
+        if result["score"] > max_score:
+            max_score = result["score"]
+
+    rows_with_max_data = []
+    # and transform the dict to a list of dicts, additionally adding the max score and the part of it
+    for row in results_of_keywords.values():
+        rows_with_max_data.append(
+            row | {"max_score": max_score, "part_of_max_score": row["score"] / max_score})
 
     # sort the results by score
-    list_of_dicts = sorted(
-        list_of_dicts, key=lambda x: x["score"], reverse=True)
-    print(list_of_dicts)
-    return list_of_dicts
+    rows_with_max_data = sorted(
+        rows_with_max_data, key=lambda x: x["score"], reverse=True)
+    return rows_with_max_data
 
 
 @app.route('/', methods=["GET"])

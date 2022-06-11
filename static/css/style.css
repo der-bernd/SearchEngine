@@ -1,0 +1,19 @@
+.match-geq-80 {
+  opacity: 1;
+}
+
+.match-geq-60 {
+  opacity: 0.8;
+}
+
+.match-geq-40 {
+  opacity: 0.6;
+}
+
+.match-geq-20 {
+  opacity: 0.5;
+}
+
+.match-geq-0 {
+  opacity: 0.2;
+}

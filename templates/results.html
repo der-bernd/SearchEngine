@@ -17,7 +17,7 @@
       integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="static/css/style.css" />
   </head>
   <body>
     <div class="container">
@@ -65,8 +65,27 @@
               <div class="col-md-12 my-2">
                 <div class="card">
                   <div class="card-body">
+
+                    </div>
                     <h5 class="card-title">{{ page.title }}</h5>
-                    <p class="card-text">{{ page.url }}</p>
+                    <div class="card-text">
+                      <p>{{ page.url }}</p>
+                    
+                      {% if page.part_of_max_score|float > 0.8 %}
+                      <div class="match-geq-80">
+                      {% elif page.part_of_max_score|float > 0.6 %}
+                      <div class="match-geq-60">
+                      {% elif page.part_of_max_score|float > 0.4 %}
+                      <div class="match-geq-40">
+                      {% elif page.part_of_max_score|float > 0.2 %}
+                      <div class="match-geq-20">
+                      {% else %}
+                      <div class="match-geq-0">
+                      {% endif %}
+                      <h3>#######</h3>
+                      </div>
+
+                    </div>
                     <a href="{{ page.url }}" class="btn btn-primary"
                       >Visit directly</a
                     >
