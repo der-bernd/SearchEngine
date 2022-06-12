@@ -7,7 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 import sys
 
-from mysql_connector import MySqlConnector
+from app.mysql_connector import MySqlConnector
 
 
 class Crawler:

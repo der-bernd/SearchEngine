@@ -142,7 +142,7 @@ def get_list_of_occurrences(query_list: list[str]) -> list:
 
 @app.route('/', methods=["GET"])
 def search():
-    return render_template('input_mask.html')
+    return render_template('index.html')
 
 
 @app.route('/search', methods=["GET"])
@@ -180,5 +180,4 @@ class Testing(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    run()
-    # unittest.main()
+    unittest.main()
