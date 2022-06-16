@@ -11,7 +11,7 @@ class MySqlConnector(object):
     def __init__(self, *args, **kwargs):
         host = os.getenv("DB_HOST")
         user = os.getenv("DB_USER")
-        password = os.getenv("DB_PASS")
+        password = os.getenv("DB_PASSWORD")
         db = os.getenv("DB_NAME")
 
         try:
@@ -20,6 +20,7 @@ class MySqlConnector(object):
             self.cursor = self.db.cursor(buffered=True)
         except Error as e:
             print("CANNOT CONNECT TO DB: {}".format(e))
+            self.conn_error = True
             return
 
     def execute_test_query(self) -> list[tuple]:

@@ -7,12 +7,13 @@ import requests
 from bs4 import BeautifulSoup
 import sys
 
-from mysql_connector import MySqlConnector
+# from ..app.mysql_connector import MySqlConnector
 
 
 class Crawler:
     def __init__(self):
-        self.db = MySqlConnector()
+        # self.db = MySqlConnector()
+        pass
 
     def crawl(self, url: str, depth_left, interval: float = 5):
         """
@@ -38,7 +39,12 @@ class Crawler:
         # add the current page as well
 
         url = url.split("?")[0]
-        self.add_link_to_db(url, title)
+        # self.add_link_to_db(url, title)
+
+        # get the text content
+
+        text_from_paragraphs = [p.text.strip() for p in soup.find_all("p")]
+        print("Text from paragraphs: {}".format(text_from_paragraphs))
 
         for link in soup.find_all('a'):
             link = link.get('href')
