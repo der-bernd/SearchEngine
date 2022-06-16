@@ -1,4 +1,4 @@
-from app.crawler import Crawler
+from crawler import Crawler
 
 MAX_DEPTH = 2
 START_URL = "https://www.google.com"

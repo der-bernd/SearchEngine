@@ -11,7 +11,7 @@ class MySqlConnector(object):
     def __init__(self, *args, **kwargs):
         host = os.getenv("DB_HOST")
         user = os.getenv("DB_USER")
-        password = os.getenv("DB_PASS")
+        password = os.getenv("DB_PASSWORD")
         db = os.getenv("DB_NAME")
 
         try:

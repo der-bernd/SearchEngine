@@ -46,7 +46,7 @@ def get_urls_with_word(word: str) -> list:
     return [(row[0], row[1]) for row in result]
 
 
-def calculate_score(is_in_title: int, is_title_start: int, is_title: int, is_in_url: int) -> int:
+def calculate_score(is_in_title: int, is_title_start: int, is_title: int, is_in_url: int, is_in_essence: int) -> int:
     """
     Calculates the score of a page.
     """
@@ -54,6 +54,7 @@ def calculate_score(is_in_title: int, is_title_start: int, is_title: int, is_in_
     TITLE_START_FACTOR = 3
     TITLE_MATCH_FACTOR = 5
     URL_CONTAIN_FACTOR = 1
+    ESSENCE_CONTAIN_FACTOR = 1
 
     score = 0
     if is_in_title:
@@ -64,6 +65,8 @@ def calculate_score(is_in_title: int, is_title_start: int, is_title: int, is_in_
         score += is_title * TITLE_MATCH_FACTOR
     if is_in_url:
         score += is_in_url * URL_CONTAIN_FACTOR
+    if is_in_essence:
+        score += is_in_essence * ESSENCE_CONTAIN_FACTOR
 
     return score
 
@@ -84,14 +87,16 @@ def get_list_of_occurrences(query_list: list[str]) -> list:
             IF(LOWER(TITLE) LIKE %s, 1, 0) AS IS_TITLE_START,
             IF(LOWER(TITLE) = %s, 1, 0) AS IS_TITLE,
             IF(LOWER(URL) LIKE %s, 1, 0) AS IS_IN_URL,
+            IF(ESSENCE LIKE %s, 1, 0) AS IS_IN_ESSENCE,
             TITLE,
             URL
-            FROM links
+            FROM spider
             WHERE LOWER(TITLE) LIKE %s OR LOWER(URL) LIKE %s
-            """, (f"%{word}%", f"{word}%", word, f"%{word}%", f"%{word}%", f"%{word}%",))
+            """, (f"%{word}%", f"{word}%", word, f"%{word}%", f"%{word}%",
+                  f"%{word}%", f"%{word}%"))
         # param order: first one is just to contain in title, second is the title to start with the word,
-        # third is the word itself as the title, fourth is the word in the url
-        # five and six are just for the where clause, to avoid returning all pages
+        # third is the word itself as the title, fourth is the word in the url and fifth is the word in the content
+        # six and seven are just for the where clause, to avoid returning all pages
 
         # for each element: add the score to the list
         for row in result:
@@ -106,7 +111,7 @@ def get_list_of_occurrences(query_list: list[str]) -> list:
                     }
 
             results_of_keywords[row[0]]["score"].append(
-                calculate_score(row[1], row[2], row[3], row[4]))
+                calculate_score(row[1], row[2], row[3], row[4], row[5]))
 
     def multiply_scores(score_list: list) -> int:
         """
@@ -142,7 +147,7 @@ def get_list_of_occurrences(query_list: list[str]) -> list:
 
 @app.route('/', methods=["GET"])
 def search():
-    return render_template('index.html')
+    return render_template('input_mask.html')
 
 
 @app.route('/search', methods=["GET"])
