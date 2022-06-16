@@ -20,6 +20,7 @@ class MySqlConnector(object):
             self.cursor = self.db.cursor(buffered=True)
         except Error as e:
             print("CANNOT CONNECT TO DB: {}".format(e))
+            self.conn_error = True
             return
 
     def execute_test_query(self) -> list[tuple]:

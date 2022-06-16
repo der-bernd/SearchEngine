@@ -89,7 +89,9 @@ def get_list_of_occurrences(query_list: list[str]) -> list:
             IF(LOWER(URL) LIKE %s, 1, 0) AS IS_IN_URL,
             IF(ESSENCE LIKE %s, 1, 0) AS IS_IN_ESSENCE,
             TITLE,
-            URL
+            URL,
+            TEXT,
+            ESSENCE
             FROM spider
             WHERE LOWER(TITLE) LIKE %s OR LOWER(URL) LIKE %s
             """, (f"%{word}%", f"{word}%", word, f"%{word}%", f"%{word}%",
@@ -98,18 +100,20 @@ def get_list_of_occurrences(query_list: list[str]) -> list:
         # third is the word itself as the title, fourth is the word in the url and fifth is the word in the content
         # six and seven are just for the where clause, to avoid returning all pages
 
-        # for each element: add the score to the list
         for row in result:
             if row[0] not in results_of_keywords:
-                # if page not in results yet, then accommodate it by initializing the dict
+                # if page ID not in results yet, then accommodate it by initializing the dict
                 for row in result:
                     # take the id as the index
                     results_of_keywords[row[0]] = {
-                        "title": row[5],
-                        "url": row[6],
-                        "score": [],
+                        "title": row[6],
+                        "url": row[7],
+                        "text": row[8],
+                        "essence": row[9],
+                        "score": [],  # init score attr with empty list
                     }
 
+            # for each element: add the score to the list
             results_of_keywords[row[0]]["score"].append(
                 calculate_score(row[1], row[2], row[3], row[4], row[5]))
 
@@ -127,6 +131,35 @@ def get_list_of_occurrences(query_list: list[str]) -> list:
     for result in results_of_keywords.values():
         # we have all the scores in an array, we could use the data to do a bit advanced stuff as well
         # but for now, just multiply them to have a bit more weight on pages with more keywords
+
+        essence = result["essence"]
+        text = result["text"]
+        excerpts = []
+        RADIUS = 100
+
+        for kw in query_list:
+            if kw in essence:
+                pos = text.find(kw)
+
+                try:
+                    left_context = text[pos - RADIUS: pos]
+                except IndexError:
+                    left_context = ""
+
+                try:
+                    right_context = text[pos + len(kw): pos + len(kw) + RADIUS]
+                except IndexError:
+                    right_context = ""
+
+                # add a tuple, containing the parts of the excerpt: left context, keyword, right context
+                excerpts.append({
+                    "left_context": left_context,
+                    "keyword": kw,
+                    "right_context": right_context
+                })
+
+        result["excerpts"] = excerpts
+
         result["score"] = multiply_scores(result["score"])
 
         # and, if the score is higher than the max score, set it as the new max score
