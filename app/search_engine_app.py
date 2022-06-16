@@ -180,7 +180,7 @@ def get_list_of_occurrences(query_list: list[str]) -> list:
 
 @app.route('/', methods=["GET"])
 def search():
-    return render_template('input_mask.html')
+    return render_template('index.html')
 
 
 @app.route('/search', methods=["GET"])
@@ -197,7 +197,7 @@ def get_search_results():
     end_time = time.time()
     elapsed_time = (end_time - start_time) * 1000
 
-    return render_template('results.html', results={
+    return render_template('index.html', results={
         "pages": page_list_scored,
         "query": query,
         "stats": {
