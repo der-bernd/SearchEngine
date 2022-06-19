@@ -38,7 +38,10 @@ class MySqlConnector(object):
         If that is a INSERT query, it returns the last inserted id as an int.
         You can switch between INSERT and SELECT by setting no_fetchall.
         """
-        cursor = self.cursor
+        try:
+            cursor = self.cursor
+        except AttributeError:
+            raise Error("CANNOT CONNECT TO DB")
         cursor.execute(query, params)
         self.db.commit()
 

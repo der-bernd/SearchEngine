@@ -61,32 +61,32 @@
         </div>
         {% for page in results.pages %}
         <div class="row">
-          <div class="col-md-1">
-            
-            {% if page.part_of_max_score|float > 0.8 %}
-              <div class="match-geq-80">
-              {% elif page.part_of_max_score|float > 0.6 %}
-              <div class="match-geq-60">
-              {% elif page.part_of_max_score|float > 0.4 %}
-              <div class="match-geq-40">
-              {% elif page.part_of_max_score|float > 0.2 %}
-              <div class="match-geq-20">
-              {% else %}
-              <div class="match-geq-0">
-              {% endif %}
-              <div class="h4 score-indicator mt-4">|</div>
-              
-              </div>
-
-          </div>
+          
           <div class="col-md-6">
-            <div class="search-result-item mb-5">
+            <div class="search-result-item mb-3">
               <div>
-                <a class="result-link result-url" href="{{ page.url }}"
-                  >{{ page.url }}</a
-                >
-                <a
-                  class="result-link result-title h5 mt-5"
+                  {% if page.part_of_max_score|float > 0.8 %}
+                  <div class="match-geq-80">
+                  {% elif page.part_of_max_score|float > 0.6 %}
+                  <div class="match-geq-60">
+                  {% elif page.part_of_max_score|float > 0.4 %}
+                  <div class="match-geq-40">
+                  {% elif page.part_of_max_score|float > 0.2 %}
+                  <div class="match-geq-20">
+                  {% else %}
+                  <div class="match-geq-0">
+                  {% endif %}
+                  <div class="h4 score-indicator mt-4">_</div>
+                  
+                  </div>
+
+                  <div class="margin-below-link">
+
+                    <a class="result-link result-url " href="{{ page.url }}"
+                    >{{ page.url }}</a>
+                  </div>
+                    <a
+                  class="result-link result-title h5 font-weight-lighter mt-5"
                   href="{{ page.url }}"
                   >{{ page.title }}</a
                 >

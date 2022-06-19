@@ -1,4 +1,8 @@
 .result-url {
+  color: black;
+}
+
+.result-title {
   color: darkblue;
 }
 
@@ -33,4 +37,12 @@
 
 .match-geq-0 {
   opacity: 0.2;
+}
+
+.main-block {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.margin-below-link {
+  margin-bottom: 3px;
 }
