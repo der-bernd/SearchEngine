@@ -9,7 +9,7 @@
     <meta name="description" content="#" />
     <meta name="keywords" content="#" />
     <!-- Page Title -->
-    <title>Listing &amp; Directory Website Template</title>
+    <title>What do you want to find</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
     <!-- Google Fonts -->
@@ -22,127 +22,52 @@
     <link rel="stylesheet" href="/static/css/themify-icons.css" />
     <!-- Hover Effects -->
     <!-- Main CSS -->
-    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="stylesheet" href="/static/css/index.css" />
   </head>
 
   <body>
-    <!--============================= HEADER =============================-->
-    <header>
-      <div class="container-fluid">
-        <div>
-          <div class="container my-3">
-            <form action="" method="GET">
-              <div class="form-group">
-                <input
-                  required
-                  type="text"
-                  name="query"
-                  value="{{ results.query }}"
-                  class="form-control"
-                  id="search"
-                  placeholder="Input your keywords"
-                />
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!--//END HEADER -->
-    <!--============================= FIND PLACES =============================-->
-    <section class="main-block">
-      <div class="container">
-        <div>
-          <p class="lead">
-            Found {{ results.stats.num_of_results }} result(s) in {{
-            results.stats.time }} for query '{{ results.query }}'
-          </p>
-        </div>
-        {% for page in results.pages %}
-        <div class="row">
-          
-          <div class="col-md-6">
-            <div class="search-result-item mb-3">
-              <div>
-                  {% if page.part_of_max_score|float > 0.8 %}
-                  <div class="match-geq-80">
-                  {% elif page.part_of_max_score|float > 0.6 %}
-                  <div class="match-geq-60">
-                  {% elif page.part_of_max_score|float > 0.4 %}
-                  <div class="match-geq-40">
-                  {% elif page.part_of_max_score|float > 0.2 %}
-                  <div class="match-geq-20">
-                  {% else %}
-                  <div class="match-geq-0">
-                  {% endif %}
-                  <div class="h4 score-indicator mt-4">_</div>
-                  
+    <section id="cover" class="min-vh-100">
+      <div id="cover-caption">
+        <div class="container">
+          <div class="row text-black">
+            <div class="mx-auto text-center form p-4">
+              <h1 class="display-4 py-2 text-truncate">
+                What do you want to find?
+              </h1>
+              <p class="lead">
+                Search in currently {{ results.num_of_records }} indexed pages
+              </p>
+              <div class="px-2">
+                <form action="/search" class="justify-content-center">
+                  <div class="form-group">
+                    <div class="d-flex">
+                      <div class="max-width-100">
+                        <label class="sr-only">Name</label>
+                        <input
+                          required
+                          type="text"
+                          name="query"
+                          class="form-control"
+                          placeholder="Input some keywords"
+                          value="{{ results.query }}"
+                        />
+                      </div>
+                      <div class="">
+                        <button
+                          type="submit"
+                          class="btn btn-dark pointer w-100"
+                        >
+                          Go for it
+                        </button>
+                      </div>
+                    </div>
                   </div>
-
-                  <div class="margin-below-link">
-
-                    <a class="result-link result-url " href="{{ page.url }}"
-                    >{{ page.url }}</a>
-                  </div>
-                    <a
-                  class="result-link result-title h5 font-weight-lighter mt-5"
-                  href="{{ page.url }}"
-                  >{{ page.title }}</a
-                >
-              </div>
-              <div>
-                {% for excerpt in page.excerpts %}
-                <p>
-                  {{ excerpt.left_context }}
-                  <strong>{{ excerpt.keyword }}</strong> {{
-                  excerpt.right_context }}
-                </p>
-                {% else %}
-                <p class="text-muted">
-                  Your keyword could not be found in the page, but title and/or
-                  url do contain it.
-                </p>
-                {% endfor %}
+                </form>
               </div>
             </div>
           </div>
         </div>
-        {% else %}
-        <div class="no-results-wrapper">
-          <p>
-            Unfortunately, your query didn't yield any results. Please try other
-            words.
-          </p>
-        </div>
-        {% endfor %}
       </div>
     </section>
-
-    <!-- BEGIN FOOTER -->
-
-    <div class="bg-black"></div>
-
-    <!--//END FOOTER -->
-
-    <!-- jQuery, Bootstrap JS. -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="static/js/jquery-3.2.1.min.js"></script>
-    <script src="static/js/popper.min.js"></script>
-    <script src="static/js/bootstrap.min.js"></script>
-
-    <script>
-      $(window).scroll(function () {
-        // 100 = The point you would like to fade the nav in.
-
-        if ($(window).scrollTop() > 100) {
-          $(".fixed").addClass("is-sticky");
-          $(".show-on-scroll").removeClass("visually-hidden");
-        } else {
-          $(".fixed").removeClass("is-sticky");
-          $(".show-on-scroll").addClass("visually-hidden");
-        }
-      });
-    </script>
   </body>
 </html>

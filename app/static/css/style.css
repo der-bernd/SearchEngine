@@ -46,3 +46,8 @@
 .margin-below-link {
   margin-bottom: 3px;
 }
+
+.found-n-results {
+  color: rgb(185, 185, 216);
+  font-size: 1.2em;
+}
