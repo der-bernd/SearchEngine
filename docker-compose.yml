@@ -2,20 +2,6 @@ version: '3.9'
 name: 'webcrawler'
 
 services:
-  crawler:
-    build: ./crawler
-    ports:
-      - "8082:5001"
-    volumes:
-      - ./crawler:/crawler
-    restart: on-failure
-    links:
-      - db
-    environment:
-      DB_HOST: ${DB_HOST}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
   
   web:
     build: ./web

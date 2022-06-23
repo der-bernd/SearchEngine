@@ -5,23 +5,22 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
+db_config = {
+    "host": os.getenv("DB_HOST"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "database": os.getenv("DB_NAME")
+}
 
 class MySqlConnector(object):
 
     def __init__(self, *args, **kwargs):
-        host = os.getenv("DB_HOST")
-        user = os.getenv("DB_USER")
-        password = os.getenv("DB_PASSWORD")
-        db = os.getenv("DB_NAME")
 
-        try:
-            self.db = mysql.connector.connect(
-                host=host, user=user, password=password, db=db)
-            self.cursor = self.db.cursor(buffered=True)
-        except Error as e:
-            print("CANNOT CONNECT TO DB: {}".format(e))
-            self.conn_error = True
-            return
+        self.db = mysql.connector.connect(**db_config)
+        cursor = self.db.cursor(buffered=True)
+        if cursor is None:
+            raise Error(f"COULD NOT CONNECT TO DB with given config: {db_config}")
+        self.cursor = cursor
 
     def execute_test_query(self) -> list[tuple]:
         cursor = self.cursor
@@ -38,10 +37,9 @@ class MySqlConnector(object):
         If that is a INSERT query, it returns the last inserted id as an int.
         You can switch between INSERT and SELECT by setting no_fetchall.
         """
-        try:
-            cursor = self.cursor
-        except AttributeError as e:
-            raise Error("CANNOT CONNECT TO DB: {}".format(e))
+        cursor = self.cursor
+        if cursor is None:
+            raise Error(f"COULD NOT CONNECT TO DB with given config: {db_config}")
         cursor.execute(query, params)
         self.db.commit()
 

@@ -35,11 +35,16 @@ class SqlStorePipeline(object):
             "database": os.getenv("DB_NAME")
         }
         print(db_params)
-        self.db = mysql.connector.connect(**db_params)
 
-        self.db.cursor().execute("TRUNCATE TABLE spider")
+        db = mysql.connector.connect(**db_params)
+        cursor = db.cursor(buffered=True)
+        if cursor is None:
+            raise RuntimeError(f"COULD NOT CONNECT TO DB with given config: {db_params}")
 
-        self.db.commit()
+        cursor.execute("TRUNCATE TABLE spider")
+
+        cursor.commit()
+        self.cursor = cursor
 
     def process_item(self, item, spider):
         cleaned_words = []
