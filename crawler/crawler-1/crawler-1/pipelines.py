@@ -18,6 +18,7 @@ nltk.download("stopwords")
 
 stopword_set = set(stopwords.words('english'))
 
+load_dotenv()
 
 class TutorialPipeline:
     def process_item(self, item, spider):
@@ -27,14 +28,12 @@ class TutorialPipeline:
 class SqlStorePipeline(object):
 
     def __init__(self):
-        load_dotenv()
         db_params = {
-            "host": "localhost",
+            "host": os.getenv("DB_HOST"),
             "user": os.getenv("DB_USER"),
             "password": os.getenv("DB_PASSWORD"),
             "database": os.getenv("DB_NAME")
         }
-        print(db_params)
 
         conn = mysql.connector.connect(**db_params)
         if not conn.is_connected():
@@ -63,8 +62,3 @@ class SqlStorePipeline(object):
 
         self.conn.commit()
 
-        print({
-            "url": item["url"],
-            "text": " ".join(cleaned_words),
-            "title": item["title"]
-        })

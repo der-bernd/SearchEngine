@@ -10,9 +10,9 @@ As of now, the app consists of two components:
 2. The Frontend/App, implemented as a HTML template which will be served via Python Framework Flask.
 3. The DB which will be used to CRUD the results.
 
-To run the crawler, just hop into the backend/tutorial/ dir and run the spider named _quotes_ via the command
+To run the crawler, just hop into the backend/tutorial/ dir and run the spider named _simplespider_ via the command
 
 ```
-scrapy crawl quotes
+scrapy crawl simplespider
 
 ```

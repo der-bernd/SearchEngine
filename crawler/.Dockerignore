@@ -1,3 +1,4 @@
 __pycache__
 
-quotes-*
+# ignore all the cached stuff
+simplespider-*

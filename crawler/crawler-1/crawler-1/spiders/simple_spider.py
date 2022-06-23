@@ -1,11 +1,13 @@
 import scrapy
 
 
-class QuotesSpider(scrapy.Spider):
-    name = "quotes"
+class SimpleSpider(scrapy.Spider):
+    name = "simplespider"
 
     start_urls = [
-        'https://en.wikipedia.org/wiki/Search_engine'
+        'https://en.wikipedia.org/wiki/Search_engine',
+        "https://www.alwego.de/",
+        "https://en.wikipedia.org/wiki/Special:Random"
         # 'http://quotes.toscrape.com/page/1/',
         # 'http://quotes.toscrape.com/page/2/',
         # "https://google.com",
@@ -13,12 +15,12 @@ class QuotesSpider(scrapy.Spider):
     ]
 
     custom_settings = {
-        "DEPTH_LIMIT": 2
+        "DEPTH_LIMIT": 3
     }
 
     def parse(self, response):
         page = response.url.split("/")[-2]
-        filename = f'quotes-{page}.html'
+        filename = f'simplespider-{page}.html'
         with open(filename, 'wb') as f:
             f.write(response.body)
         self.log(f'Saved file {filename}')
