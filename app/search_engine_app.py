@@ -21,11 +21,11 @@ def run():
     app.run(debug=True)
 
 
-def format_diff_in_ms(diff: float) -> str:
+def format_diff_in_s(diff: float) -> str:
     """
     Returns a string representation of the time difference in milliseconds.
     """
-    return f"{diff:.2f} ms"
+    return f"{diff:.3f} s"
 
 
 def count_word_in_pages(word: str) -> int:
@@ -178,9 +178,21 @@ def get_list_of_occurrences(query_list: list[str]) -> list:
     return rows_with_max_data
 
 
+def get_num_of_records() -> int:
+    """
+    Returns the number of records in the database.
+    """
+    result = mysql.query("SELECT COUNT(*) FROM spider")
+    return int(result[0][0])
+
+
 @app.route('/', methods=["GET"])
 def search():
-    return render_template('input_mask.html')
+    num_of_records = get_num_of_records()
+    return render_template('index.html', results={
+        "query": "",
+        "num_of_records": num_of_records,
+    })
 
 
 @app.route('/search', methods=["GET"])
@@ -195,14 +207,14 @@ def get_search_results():
     page_list_scored = get_list_of_occurrences(query_list)
 
     end_time = time.time()
-    elapsed_time = (end_time - start_time) * 1000
+    elapsed_time = (end_time - start_time)
 
     return render_template('results.html', results={
         "pages": page_list_scored,
         "query": query,
         "stats": {
             "num_of_results": len(page_list_scored),
-            "time": format_diff_in_ms(elapsed_time)
+            "time": format_diff_in_s(elapsed_time)
         }
     })
 
