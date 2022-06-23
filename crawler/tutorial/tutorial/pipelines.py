@@ -10,7 +10,6 @@ import os
 import mysql.connector
 
 import nltk
-from itemadapter import ItemAdapter
 from nltk.corpus import stopwords
 
 from dotenv import load_dotenv
@@ -30,9 +29,9 @@ class SqlStorePipeline(object):
     def __init__(self):
         load_dotenv()
         db_params = {
+            "host": os.getenv("DB_HOST"),
             "user": os.getenv("DB_USER"),
             "password": os.getenv("DB_PASSWORD"),
-            "host": os.getenv("DB_HOST"),
             "database": os.getenv("DB_NAME")
         }
         print(db_params)

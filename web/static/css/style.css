@@ -1,0 +1,53 @@
+.result-url {
+  color: black;
+}
+
+.result-title {
+  color: darkblue;
+}
+
+.result-link {
+  text-decoration: none;
+}
+
+.result-link:hover {
+  text-decoration: none;
+  color: initial;
+}
+
+.score-indicator {
+  color: rgb(0, 0, 73);
+}
+
+.match-geq-80 {
+  opacity: 1;
+}
+
+.match-geq-60 {
+  opacity: 0.9;
+}
+
+.match-geq-40 {
+  opacity: 0.7;
+}
+
+.match-geq-20 {
+  opacity: 0.4;
+}
+
+.match-geq-0 {
+  opacity: 0.2;
+}
+
+.main-block {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.margin-below-link {
+  margin-bottom: 3px;
+}
+
+.found-n-results {
+  color: rgb(185, 185, 216);
+  font-size: 1.2em;
+}

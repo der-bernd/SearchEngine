@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Bernd Mayinger" />
+    <meta name="description" content="#" />
+    <meta name="keywords" content="#" />
+    <!-- Page Title -->
+    <title>Listing &amp; Directory Website Template</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500,700,900"
+      rel="stylesheet"
+    />
+    <!-- Simple line Icon -->
+    <!-- Themify Icon -->
+    <link rel="stylesheet" href="/static/css/themify-icons.css" />
+    <!-- Hover Effects -->
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="stylesheet" href="/static/css/navbar.css" />
+  </head>
+
+  <body>
+    <!--============================= HEADER =============================-->
+    
+    <nav class="navbar navbar-expand-md fixed-top" id="banner">
+      <div class="container">
+      <!-- Brand -->
+      <div class="navbar-brand">
+        <input
+                required
+                autofocus
+                type="text"
+                class="form-control"
+                name="query"
+                value="{{ results.query }}"
+                id="search"
+                placeholder="Search"
+              />
+      </div>
+      <div class="scroll-input-form w-100 d-none">
+        <form action="" method="GET">
+          <div class="form-group">
+
+            <input
+            required
+            type="text"
+            class="form-control w-100"
+            name="query"
+            value="{{ results.query }}"
+            id="search"
+            placeholder="Search"
+            />
+          </div>
+        </form>
+      </div>
+      <div></div>
+
+
+    </nav>
+
+    <div class="banner">
+      <div class="container">
+
+
+      </div>
+    </div>
+
+
+    <!--//END HEADER -->
+    <!--============================= FIND PLACES =============================-->
+    <section class="main-block">
+      <div class="container">
+        <div>
+          <p class="found-n-results">
+            Found {{ results.stats.num_of_results }} result(s) in {{
+            results.stats.time }} for query '{{ results.query }}'
+          </p>
+        </div>
+        {% for page in results.pages %}
+        <div class="row">
+          
+          <div class="col-md-6">
+            <div class="search-result-item mb-3">
+              <div>
+                  {% if page.part_of_max_score|float > 0.8 %}
+                  <div class="match-geq-80">
+                  {% elif page.part_of_max_score|float > 0.6 %}
+                  <div class="match-geq-60">
+                  {% elif page.part_of_max_score|float > 0.4 %}
+                  <div class="match-geq-40">
+                  {% elif page.part_of_max_score|float > 0.2 %}
+                  <div class="match-geq-20">
+                  {% else %}
+                  <div class="match-geq-0">
+                  {% endif %}
+                  <div class="h4 score-indicator mt-4">_</div>
+                  
+                  </div>
+
+                  <div class="margin-below-link">
+
+                    <a class="result-link result-url " href="{{ page.url }}"
+                    >{{ page.url }}</a>
+                  </div>
+                    <a
+                  class="result-link result-title h5 font-weight-lighter mt-5"
+                  href="{{ page.url }}"
+                  >{{ page.title }}</a
+                >
+              </div>
+              <div>
+                {% for excerpt in page.excerpts %}
+                <p>
+                  {{ excerpt.left_context }}
+                  <strong>{{ excerpt.keyword }}</strong> {{
+                  excerpt.right_context }}
+                </p>
+                {% else %}
+                <p class="text-muted">
+                  Your keyword could not be found in the page, but title and/or
+                  url do contain it.
+                </p>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="no-results-wrapper">
+          <form action="" method="GET">
+            <p>
+              <span>
+                Unfortunately, your query didn't yield any results. Please try other
+                words: 
+              </span>
+              <input
+                required
+                autofocus
+                type="text"
+                class="form-control"
+                name="query"
+                value="{{ results.query }}"
+                id="search"
+                placeholder="Search"
+              />
+          </p>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- BEGIN FOOTER -->
+
+    <div class="bg-black"></div>
+
+    <!--//END FOOTER -->
+
+    <!-- jQuery, Bootstrap JS. -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="static/js/jquery-3.2.1.min.js"></script>
+    <script src="static/js/popper.min.js"></script>
+    <script src="static/js/bootstrap.min.js"></script>
+
+    <script>
+      	$(document).on("scroll", function(){
+		if
+      ($(document).scrollTop() > 150){
+		  $("#banner").addClass("shrink");
+
+      $(".scroll-input-form").removeClass("d-none")
+      $(".navbar-brand").addClass("d-none")
+		}
+		else
+		{
+      $("#banner").removeClass("shrink");
+      $(".scroll-input-form").addClass("d-none")
+      $(".navbar-brand").removeClass("d-none")
+		}
+	});
+    </script>
+  </body>
+</html>
