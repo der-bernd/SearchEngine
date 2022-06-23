@@ -6,8 +6,11 @@ from urllib.parse import MAX_CACHE_SIZE
 import requests
 from bs4 import BeautifulSoup
 import sys
+import os
 
 # from ..app.mysql_connector import MySqlConnector
+
+load_dotenv()
 
 
 class Crawler:

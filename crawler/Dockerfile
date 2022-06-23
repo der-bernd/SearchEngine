@@ -2,20 +2,20 @@ ARG DB_HOST
 ARG DB_USER
 ARG DB_PASSWORD
 ARG DB_NAME
-FROM python:3.9-alpine
+FROM python:3.9-slim-bullseye
 
 WORKDIR /crawler
 
 EXPOSE 5001
 
-COPY requirements.txt requirements.txt
+RUN python -m venv /opt/venv
 
-RUN cat requirements.txt
+COPY requirements.txt .
 
-RUN python -m pip install --upgrade pip
+RUN . /opt/venv/bin/activate && pip install -r requirements.txt
 
-RUN pip install -r requirements.txt
+RUN . /opt/venv/bin/activate && pip freeze
 
 COPY . .
 
-CMD ["python", "main.py"]
+CMD . /opt/venv/bin/activate && exec python main.py
