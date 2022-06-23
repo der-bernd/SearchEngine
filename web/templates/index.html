@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Bernd Mayinger" />
+    <meta name="description" content="#" />
+    <meta name="keywords" content="#" />
+    <!-- Page Title -->
+    <title>What do you want to find</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500,700,900"
+      rel="stylesheet"
+    />
+    <!-- Simple line Icon -->
+    <!-- Themify Icon -->
+    <link rel="stylesheet" href="/static/css/themify-icons.css" />
+    <!-- Hover Effects -->
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/static/css/index.css" />
+  </head>
+
+  <body>
+    <section id="cover" class="min-vh-100">
+      <div id="cover-caption">
+        <div class="container">
+          <div class="row text-black">
+            <div class="mx-auto text-center form p-4">
+              <h1 class="display-4 py-2 text-truncate">
+                What do you want to find?
+              </h1>
+              <p class="lead">
+                Search in currently {{ results.num_of_records }} indexed pages
+              </p>
+              <div class="px-2">
+                <form action="/search" class="justify-content-center">
+                  <div class="form-group">
+                    <div class="d-flex">
+                      <div class="max-width-100">
+                        <label class="sr-only">Name</label>
+                        <input
+                          required
+                          type="text"
+                          name="query"
+                          class="form-control"
+                          placeholder="Input some keywords"
+                          value="{{ results.query }}"
+                        />
+                      </div>
+                      <div class="">
+                        <button
+                          type="submit"
+                          class="btn btn-dark pointer w-100"
+                        >
+                          Go for it
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,53 @@
+version: '3.9'
+name: 'webcrawler'
+
+services:
+  crawler:
+    build: ./crawler
+    volumes:
+      - ./crawler:/crawler
+    restart: on-failure
+    links:
+      - db
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+  
+  web:
+    build: ./web
+    ports:
+      - "8080:5000"
+    volumes:
+      - ./web:/web
+    links:
+      - db
+    restart: on-failure
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+  pma:
+    image: phpmyadmin
+    ports:
+      - "8081:80"
+    volumes:
+      - ./pma:/pma
+    links:
+      - db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+
+  db:
+    image: mysql:latest
+    volumes:
+      - ./db:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: on-failure
+    environment:
+      MYSQL_ROOT_USER: ${DB_USER}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}

@@ -7,10 +7,10 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'tutorial'
+BOT_NAME = 'crawler-1'
 
-SPIDER_MODULES = ['tutorial.spiders']
-NEWSPIDER_MODULE = 'tutorial.spiders'
+SPIDER_MODULES = ['crawler-1.spiders']
+NEWSPIDER_MODULE = 'crawler-1.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -63,8 +63,8 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'tutorial.pipelines.TutorialPipeline': 300,
-    'tutorial.pipelines.SqlStorePipeline': 400,
+    'crawler-1.pipelines.TutorialPipeline': 300,
+    'crawler-1.pipelines.SqlStorePipeline': 400,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

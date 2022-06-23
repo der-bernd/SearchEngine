@@ -1,19 +1,52 @@
 # crawl a webpage and index all the links
 
+from msilib.schema import Error
 import time
 import unittest
 from urllib.parse import MAX_CACHE_SIZE
 import requests
 from bs4 import BeautifulSoup
 import sys
+import os
+import json
+import mysql.connector
 
-# from ..app.mysql_connector import MySqlConnector
+from dotenv import load_dotenv
 
+load_dotenv()
+
+DB_HOST = os.getenv("DB_HOST")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
+db_config = {
+    "host": "localhost",
+    "user": DB_USER,
+    "password": DB_PASSWORD,
+    "database": DB_NAME
+}
 
 class Crawler:
     def __init__(self):
-        # self.db = MySqlConnector()
-        pass
+        
+        conn = mysql.connector.connect(**db_config)
+        if not conn.is_connected():
+            raise Error(f"""Could not get cursors, probably because of a connection error.\n
+            Are these credentials correct: {db_config}? E: {e}""")
+        cursor = conn.cursor()
+        print(f"Connection established with config {db_config}")
+
+
+        
+        cursor.execute("TRUNCATE links")
+        cursor.execute("TRUNCATE spiders")
+
+        print("Tables have been truncated")
+
+        conn.commit()
+
+        self.conn = conn
+
 
     def crawl(self, url: str, depth_left, interval: float = 5):
         """
@@ -39,7 +72,7 @@ class Crawler:
         # add the current page as well
 
         url = url.split("?")[0]
-        # self.add_link_to_db(url, title)
+        self.add_link_to_db(url, title)
 
         # get the text content
 
@@ -64,12 +97,19 @@ class Crawler:
                                1, interval)
 
     def add_link_to_db(self, link: str, title: str):
-        conn = self.db
-        does_link_already_exist = conn.query(
-            "SELECT COUNT(*) FROM links WHERE URL = %s", (link, ))[0][0] > 0
+        conn = self.conn
+        cursor = conn.cursor()
+        if not conn.is_connected():
+            raise Error(f"""Could not establish conn again, probably because of a connection error.\n
+            Are these credentials correct: {db_config}?""")
+        cursor.execute(
+            "SELECT COUNT(*) FROM links WHERE URL = %s", (link, ))
+        does_link_already_exist = cursor.fetchall()[0][0] > 0
+        print(does_link_already_exist)
         if not does_link_already_exist:
-            conn.query(
-                "INSERT INTO links (URL, TITLE) VALUES (%s, %s)", (link, title), no_fetchall=True)
+            cursor.execute(
+                "INSERT INTO links (URL, TITLE) VALUES (%s, %s)", (link, title))
+            conn.commit()
             print("Added link: {}".format(link))
 
 
