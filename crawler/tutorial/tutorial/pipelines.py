@@ -29,22 +29,22 @@ class SqlStorePipeline(object):
     def __init__(self):
         load_dotenv()
         db_params = {
-            "host": os.getenv("DB_HOST"),
+            "host": "localhost",
             "user": os.getenv("DB_USER"),
             "password": os.getenv("DB_PASSWORD"),
             "database": os.getenv("DB_NAME")
         }
         print(db_params)
 
-        db = mysql.connector.connect(**db_params)
-        cursor = db.cursor(buffered=True)
-        if cursor is None:
+        conn = mysql.connector.connect(**db_params)
+        if not conn.is_connected():
             raise RuntimeError(f"COULD NOT CONNECT TO DB with given config: {db_params}")
+        cursor = conn.cursor(buffered=True)
 
-        cursor.execute("TRUNCATE TABLE spider")
+        cursor.execute("TRUNCATE TABLE spiders")
 
-        cursor.commit()
-        self.cursor = cursor
+        conn.commit()
+        self.conn = conn
 
     def process_item(self, item, spider):
         cleaned_words = []
@@ -56,10 +56,12 @@ class SqlStorePipeline(object):
 
         "".join(cleaned_words)
 
-        self.db.cursor().execute("INSERT INTO spider (URL, TITLE, TEXT, ESSENCE) VALUES (%s, %s, %s, %s)",
+        cursor = self.conn.cursor(buffered=True)
+
+        cursor.execute("INSERT INTO spiders (URL, TITLE, TEXT, ESSENCE) VALUES (%s, %s, %s, %s)",
                                  (item["url"],  item["title"], item["text"], " ".join(cleaned_words)))
 
-        self.db.commit()
+        self.conn.commit()
 
         print({
             "url": item["url"],

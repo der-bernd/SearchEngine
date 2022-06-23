@@ -92,7 +92,7 @@ def get_list_of_occurrences(query_list: list[str]) -> list:
             URL,
             TEXT,
             ESSENCE
-            FROM spider
+            FROM spiders
             WHERE LOWER(TITLE) LIKE %s OR LOWER(URL) LIKE %s
             """, (f"%{word}%", f"{word}%", word, f"%{word}%", f"%{word}%",
                   f"%{word}%", f"%{word}%"))
@@ -182,7 +182,7 @@ def get_num_of_records() -> int:
     """
     Returns the number of records in the database.
     """
-    result = mysql.query("SELECT COUNT(*) FROM spider")
+    result = mysql.query("SELECT COUNT(*) FROM spiders")
     return int(result[0][0])
 
 

@@ -8,4 +8,4 @@ db
 
 __pycache__
 
-backend/tutorial/quotes-*
+crawler/tutorial/quotes-*

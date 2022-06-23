@@ -36,14 +36,16 @@ class Crawler:
         cursor = conn.cursor()
         print(f"Connection established with config {db_config}")
 
+
         
         cursor.execute("TRUNCATE links")
         cursor.execute("TRUNCATE spiders")
 
+        print("Tables have been truncated")
+
         conn.commit()
 
-        cursor.close()
-        conn.close()
+        self.conn = conn
 
 
     def crawl(self, url: str, depth_left, interval: float = 5):
@@ -95,11 +97,11 @@ class Crawler:
                                1, interval)
 
     def add_link_to_db(self, link: str, title: str):
-        conn = mysql.connector.connect(**db_config)
-        if not conn.is_connected():
-            raise Error(f"""Could not get cursors, probably because of a connection error.\n
-            Are these credentials correct: {db_config}?""")
+        conn = self.conn
         cursor = conn.cursor()
+        if not conn.is_connected():
+            raise Error(f"""Could not establish conn again, probably because of a connection error.\n
+            Are these credentials correct: {db_config}?""")
         cursor.execute(
             "SELECT COUNT(*) FROM links WHERE URL = %s", (link, ))
         does_link_already_exist = cursor.fetchall()[0][0] > 0
