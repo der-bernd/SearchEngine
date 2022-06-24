@@ -1,4 +1,4 @@
 __pycache__
 
 # ignore all the cached stuff
-simplespider-*
+crawler-1/saved-pages/

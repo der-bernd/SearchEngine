@@ -38,11 +38,7 @@ class SqlStorePipeline(object):
         conn = mysql.connector.connect(**db_params)
         if not conn.is_connected():
             raise RuntimeError(f"COULD NOT CONNECT TO DB with given config: {db_params}")
-        cursor = conn.cursor(buffered=True)
 
-        cursor.execute("TRUNCATE TABLE spiders")
-
-        conn.commit()
         self.conn = conn
 
     def process_item(self, item, spider):
@@ -57,8 +53,16 @@ class SqlStorePipeline(object):
 
         cursor = self.conn.cursor(buffered=True)
 
-        cursor.execute("INSERT INTO spiders (URL, TITLE, TEXT, ESSENCE) VALUES (%s, %s, %s, %s)",
-                                 (item["url"],  item["title"], item["text"], " ".join(cleaned_words)))
+        cursor.execute("DELETE FROM spiders WHERE URL = %s", (item["url"],))
 
+        try:
+            cursor.execute("INSERT INTO spiders (URL, TITLE, TEXT, ESSENCE) VALUES (%s, %s, %s, %s)",
+                                 (item["url"],  item["title"], item["text"], " ".join(cleaned_words)))
+        except:
+            # just in case the item is already in the DB though it shouldn't be
+            pass
+
+        cursor.close()
         self.conn.commit()
+
 

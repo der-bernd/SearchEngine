@@ -189,9 +189,17 @@ def get_num_of_records() -> int:
 @app.route('/', methods=["GET"])
 def search():
     num_of_records = get_num_of_records()
+    if num_of_records > 1000:
+        more_than_number = int(num_of_records/1000) * 1000
+    elif num_of_records > 500:
+        more_than_number = 500
+    elif num_of_records > 200:
+        more_than_number = 200
+    else:
+        more_than_number = 0
     return render_template('index.html', results={
         "query": "",
-        "num_of_records": num_of_records,
+        "more_than_k_records": more_than_number,
     })
 
 
