@@ -1,6 +1,7 @@
 .venv
 
-db
+db/*
+!db/init.sql
 
 .env
 

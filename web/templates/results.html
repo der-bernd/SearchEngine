@@ -34,15 +34,15 @@
       <!-- Brand -->
       <div class="navbar-brand">
         <input
-                required
-                autofocus
-                type="text"
-                class="form-control"
-                name="query"
-                value="{{ results.query }}"
-                id="search"
-                placeholder="Search"
-              />
+            required
+            autofocus
+            type="text"
+            class="form-control"
+            name="query"
+            value="{{ results.query }}"
+            id="search"
+            placeholder="Search"
+          />
       </div>
       <div class="scroll-input-form w-100 d-none">
         <form action="" method="GET">
@@ -136,20 +136,11 @@
         <div class="no-results-wrapper">
           <form action="" method="GET">
             <p>
-              <span>
                 Unfortunately, your query didn't yield any results. Please try other
-                words: 
-              </span>
-              <input
-                required
-                autofocus
-                type="text"
-                class="form-control"
-                name="query"
-                value="{{ results.query }}"
-                id="search"
-                placeholder="Search"
-              />
+                words.
+          </p>
+          <p>
+            Focus has been set to the input field at the top of the page.
           </p>
         </div>
         {% endfor %}

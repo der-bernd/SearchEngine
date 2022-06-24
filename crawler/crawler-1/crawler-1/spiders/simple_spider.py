@@ -18,7 +18,7 @@ class SimpleSpider(scrapy.Spider):
 
     def parse(self, response):
         page = response.url.split("/")[-2]
-        filename = f'saved_pages/simplespider-{page}.html'
+        filename = f'saved-pages/simplespider-{page}.html'
         with open(filename, 'wb') as f:
             f.write(response.body)
         self.log(f'Saved file {filename}')
