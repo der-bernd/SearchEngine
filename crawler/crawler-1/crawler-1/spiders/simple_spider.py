@@ -8,34 +8,26 @@ class SimpleSpider(scrapy.Spider):
         'https://en.wikipedia.org/wiki/Search_engine',
         "https://www.alwego.de/",
         "https://en.wikipedia.org/wiki/Special:Random"
-        # 'http://quotes.toscrape.com/page/1/',
-        # 'http://quotes.toscrape.com/page/2/',
-        # "https://google.com",
-        # "https://microsoft.com",
+        "https://en.wikipedia.org/wiki/Special:Random"
+        "https://en.wikipedia.org/wiki/Special:Random"
     ]
 
     custom_settings = {
-        "DEPTH_LIMIT": 3
+        "DEPTH_LIMIT": 2
     }
 
     def parse(self, response):
         page = response.url.split("/")[-2]
-        filename = f'simplespider-{page}.html'
+        filename = f'saved_pages/simplespider-{page}.html'
         with open(filename, 'wb') as f:
             f.write(response.body)
         self.log(f'Saved file {filename}')
-
-        max_follows = 10
 
         for next_page in response.xpath('//a/@href').extract():
             if "?" in next_page:
                 # If ? is in the url, it's more likely a web-app
                 # Currently easiest solution: just do not crawl it
                 continue
-
-            max_follows -= 1
-            if max_follows < 0:
-                break
 
             yield response.follow(next_page, callback=self.parse)
 
