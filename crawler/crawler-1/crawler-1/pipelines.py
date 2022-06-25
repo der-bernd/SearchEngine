@@ -49,8 +49,6 @@ class SqlStorePipeline(object):
                 continue
             cleaned_words.append(word)
 
-        "".join(cleaned_words)
-
         cursor = self.conn.cursor(buffered=True)
 
         cursor.execute("DELETE FROM spiders WHERE URL = %s", (item["url"],))
