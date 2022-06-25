@@ -1,8 +1,10 @@
+from sqlite3 import InterfaceError
 import mysql.connector
 from mysql.connector import Error
 import unittest
 from dotenv import load_dotenv
 import os
+from mysql.connector import errorcode
 load_dotenv()
 
 db_config = {
@@ -15,39 +17,51 @@ db_config = {
 class MySqlConnector(object):
 
     def __init__(self, *args, **kwargs):
-
-        self.db = mysql.connector.connect(**db_config)
-        cursor = self.db.cursor(buffered=True)
-        if cursor is None:
-            raise Error(f"COULD NOT CONNECT TO DB with given config: {db_config}")
-        self.cursor = cursor
+        try:
+            conn = mysql.connector.connect(**db_config)
+        except mysql.connector.Error as e:
+            if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                print("Something is wrong with your user name or password: {}, E: {}".format((db_config, e)))
+            elif e.errno == errorcode.ER_BAD_DB_ERROR:
+                print("Database does not exist with given config: {}, E: {}".format((db_config, e)))
+            else:
+                print(e)
+        if not conn.is_connected():
+            raise Error(f"could not establish connection with config: {db_config}")
+        self.conn = conn
 
     def execute_test_query(self) -> list[tuple]:
-        cursor = self.cursor
-        cursor.execute("SELECT * FROM test WHERE ID = 0")
-        self.db.commit()
+        """
+        This query here is just for testing purposes.
+        It should return an empty list since there won't be a record with ID 0.
+        """
+        result = self.query("SELECT * FROM test WHERE ID = 0")
 
-        result = [row for row in cursor.fetchall()]
         return result
 
-    def query(self, query: str, params: tuple = (), commit=False, no_fetchall=False) -> list[tuple]:
+    def query(self, query: str, params: tuple = (), commit=True) -> list[tuple]:
         """
         Executes the given query with the params.
-        If that is a SELECT query, it returns the result as a list of tuples.
-        If that is a INSERT query, it returns the last inserted id as an int.
-        You can switch between INSERT and SELECT by setting no_fetchall.
+        If there are records to be returned, returns them as a list of tuples.
         """
-        cursor = self.cursor
-        if cursor is None:
-            raise Error(f"COULD NOT CONNECT TO DB with given config: {db_config}")
+        conn = self.conn
+        if not conn.is_connected():
+            raise Error(f"could not re-establish connection with given config: {db_config}")
+        cursor = conn.cursor(prepared=True)
         cursor.execute(query, params)
-        self.db.commit()
 
-        if no_fetchall:
-            return cursor.lastrowid
-        else:
-            result = [row for row in cursor.fetchall()]
-            return result
+        try:
+            result = cursor.fetchall()
+        except InterfaceError as e:
+            # unfortunately, the cursor.fetchall() method throws an InterfaceError if there are no records to be returned
+            result = []
+        
+        if commit:
+            conn.commit()
+        
+        cursor.close()
+
+        return result
 
 
 class SimpleTest(unittest.TestCase):
@@ -84,12 +98,12 @@ class SimpleTest(unittest.TestCase):
         conn = self.conn
         ID = 99
         conn.query("INSERT INTO test (ID) VALUES (%s)",
-                   (ID,), no_fetchall=True)
+                   (ID,))
         result = conn.query("SELECT ID FROM test WHERE ID = %s", (ID,))
 
         self.assertEqual(result, [(99,)])
 
-        conn.query("DELETE FROM test WHERE ID = %s", (ID,), no_fetchall=True)
+        conn.query("DELETE FROM test WHERE ID = %s", (ID,))
         result = conn.query("SELECT ID FROM test WHERE ID = %s", (ID,))
         self.assertEqual(result, [])
 

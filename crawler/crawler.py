@@ -137,7 +137,7 @@ class SimpleTest(unittest.TestCase):
         links_in_db = conn.query("SELECT COUNT(*) FROM links")[0][0]
 
         # tidy up
-        conn.query("DELETE FROM links", no_fetchall=True)
+        conn.query("DELETE FROM links")
 
         self.assertEqual(number_of_links_supposed_to_be_in_db, links_in_db)
 
