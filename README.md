@@ -55,6 +55,8 @@ The search engine did took a bit more time. But let's explain the two pages:
 
 On the home page, you just have a very clean page with an input field, a nice (freely available) background image and the (rough) number of indexed pages. On the one hand, this is for marketing, on the other hand for monitoring purposes to make sure the crawler is working in the background.
 
+![Screenshot of homepage](readme-media/index.jpg)
+
 ### Search results
 
 If you have entered your word (and once again almost destroyed your return key on the keyboard), you get to the results page. First, you will see how long the evaluation took (sorry Google, got that idea from you) and you will of course see your results.
@@ -67,6 +69,8 @@ If there aren't any results, you will be asked to input other keywords.
 If the keywords are in the text of the page, an excerpt will be shown with highlighted keyword.
 
 One sentence to performance: currently the application doesn't scale properly. Up to 5000 pages there shouldn't be any problems (about 0-2s), but with tens of thousands of rows it could take some seconds.
+
+![Screenshot of results page](readme-media/results.jpg)
 
 Some improvements, which I was actually up to implement, but sadly I had the situation that two friends of mine recently died in two car accidents, so I was not as productive as I actually wanted to be.
 The improvements would have been:

@@ -33,7 +33,9 @@
       <div class="container">
       <!-- Brand -->
       <div class="navbar-brand">
-        <input
+        <form action="" method="GET">
+          <div class="form-group">
+            <input
             required
             autofocus
             type="text"
@@ -42,10 +44,13 @@
             value="{{ results.query }}"
             id="search"
             placeholder="Search"
-          />
+            />
+            <input type="submit" class="d-none" />
+          </div>
+        </form>
       </div>
       <div class="scroll-input-form w-100 d-none">
-        <form action="" method="GET">
+        <form action="/search" method="GET">
           <div class="form-group">
 
             <input
@@ -57,18 +62,16 @@
             id="search"
             placeholder="Search"
             />
+            <input type="submit" class="d-none" />
           </div>
         </form>
       </div>
-      <div></div>
-
-
+      </div>
     </nav>
 
     <div class="banner">
       <div class="container">
-
-
+        <!-- this empty container has to stay here since it shows the hero image -->
       </div>
     </div>
 
@@ -134,7 +137,6 @@
         </div>
         {% else %}
         <div class="no-results-wrapper">
-          <form action="" method="GET">
             <p>
                 Unfortunately, your query didn't yield any results. Please try other
                 words.
