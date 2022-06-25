@@ -26,8 +26,7 @@ class MySqlConnector(object):
                 print("Database does not exist with given config: {}, E: {}".format((db_config, e)))
             else:
                 print(e)
-        if not conn.is_connected():
-            raise Error(f"could not establish connection with config: {db_config}")
+
         self.conn = conn
 
     def execute_test_query(self) -> list[tuple]:

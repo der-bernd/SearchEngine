@@ -4,6 +4,7 @@ db/*
 !db/init.sql
 
 .env
+!readme-media/.env
 
 .pyc
 

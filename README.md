@@ -2,26 +2,39 @@
 
 This project was to solve a task provided by a lesson named Database Programming Interfaces. The goal was to develop a simple search engine with a crawler which crawls title, url and most important words of a page (do stopword elimination).
 
-# Run the stuff
-
 As of now, the app consists of these components:
 
 1. The Crawler, written in python
 2. The Frontend/App, implemented as a HTML template which will be served via Python Framework Flask.
 3. The DB which will be used to CRUD the results.
 
-This project is being powered by docker - all images are public available at docker hub.
+You can find more details about the implementation below, after the installation instructions.
 
-You can pull web and db via executing
+# Run the stuff
+
+## The easy way
+
+The first option is just to visit the live demo I've provided for you:
+
+[Search engine on one of my virtual machines](http://bernd.one:8081)
+
+[Related PHPMyAdmin installation](http://bernd.one:8082)
+
+## The (also easy) way via your machine
+
+This project is being powered by Docker - all images are public available at Docker Hub. If you want to run this project, please make sure you have Docker installed (you can find it on their [Official Homepage](https://docker.com))
+
+To get the containers quicky up and running by yourself, you can copy _readme-media/docker-compose.yml_ into a dir of your machine, cd into it and then simply type
 
 ```
-docker pull 935610/webcrawler_web
-docker pull 935610/webcrawler_crawler
+docker-compose up -d
 ```
 
-And then expose them like shown in docker-compose.
+Note: -d is for _detached_ which means you won't get the console messed up with the logs. Please do not take the _docker-compose.yml_ at the root dir of this repo since it won't work.
 
-Please make sure that they are exposed to ports which aren't already in use!
+And please do make an _.env_ file for the credentials, you can use the template in _readme-media/.env_ as well.
+
+If the specified ports in docker-compose are already in use on your target host, then you can easily set other ports.
 
 # Crawler
 
@@ -85,3 +98,7 @@ But as of now, I'm also happy with the result.
 Kind regards
 
 Bernd
+
+```
+
+```
